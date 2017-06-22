@@ -9,8 +9,11 @@ Instancely is an alternative AWS EC2 and RDS dashboard that sorts instances by t
 2. EC2 and RDS instances with the following key-value pairs:
 
    Team = team_name
+
    Environment = environment_name
+
    Application = application_name
+   
    Name = instance_name
 
 ### Usage (.NET)
