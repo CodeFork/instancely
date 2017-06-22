@@ -44,8 +44,18 @@ OPENID_CLIENTSECRET=abc123
 OPENID_AUTHORITY=https://auth.yourdomain.com/
 SLACK_WEBHOOK=https://hooks.slack.com/services/xxx/yyy/zzz
 ```
-4. Run `docker build <image_name>:<image_tag> .`
-5. Run `docker run -itd --env-file ./path/to/env.list -p 5000:5000 <image_name>:<image_tag>`
+4. Create a file named `Dockerfile` in the publish output directory with the following content:
+```
+FROM microsoft/dotnet
+
+COPY . /app
+
+WORKDIR /app
+
+ENTRYPOINT ["dotnet", "Instancely.dll"]
+```
+5. Run `docker build <image_name>:<image_tag> .`
+6. Run `docker run -itd --env-file ./path/to/env.list -p 5000:5000 <image_name>:<image_tag>`
 
 ### Screenshots
 Coming Soon
