@@ -1,0 +1,161 @@
+﻿@model Instancely.Models.EC2
+
+<div class="row">
+    <div id="sidebar" class="col-sm-2">
+        <ul class="nav nav-sidebar flex-column">
+            <li class="nav-item active">Teams</li>
+            @foreach (var team in Model.Teams)
+            {
+                <li class="nav-item"><a class="@((ViewData["Team"] ?? "").ToString().ToLower() == team.ToLower() ? "nav-link active show-loader" : "nav-link show-loader")" href="/ec2?team=@Uri.EscapeDataString(team.ToLower())">@team</a></li>
+            }
+        </ul>
+    </div>
+
+    <div id="content" class="col-sm-10">
+        @foreach (var environment in Model.Environments)
+        {
+            <p class="content-header">@environment.Name</p>
+
+            @foreach (var application in environment.Applications.OrderBy(a => a.Name))
+            {
+                <p class="content-subheader">@application.Name</p>
+
+                <table class="table table-hover">
+                    <thead>
+                        <tr class="row">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <th class="col-sm-1">Manage</th>
+                            }
+                            <th class="col-sm-2">ID</th>
+                            <th class="col-sm-2">Name</th>
+                            <th class="col-sm-1">Type</th>
+                            <th class="col-sm-1">Platform</th>
+                            <th class="@(User.Identity.IsAuthenticated == true ? "col-sm-1" : "col-sm-2")">Availability Zone</th>
+                            <th class="col-sm-1">Private IP</th>
+                            <th class="col-sm-1">State</th>
+                            <th class="col-sm-2">Launch Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var instance in application.EC2Instances.OrderBy(i => i.InstanceId))
+                        {
+                            <tr class="row">
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <td class="col-sm-1 dropdown">
+                                        <a class="dropdown-toggle material-icons" href="#" data-toggle="dropdown">settings</a>
+
+                                        <div class="dropdown-menu ddarrow" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+                                            <button id="@instance.InstanceId-start" class="dropdown-item" type="button">Start</button>
+                                            <button id="@instance.InstanceId-stop" class="dropdown-item" type="button">Stop</button>
+                                            <button id="@instance.InstanceId-restart" class="dropdown-item" type="button">Restart</button>
+                                            <button id="@instance.InstanceId-terminate" class="dropdown-item" type="button">Terminate</button>
+                                            <div class="dropdown-divider"></div>
+                                            <button id="@instance.InstanceId-logs" class="dropdown-item" type="button">Logs</button>
+                                            <button id="@instance.InstanceId-screenshot" class="dropdown-item" type="button">Screenshot</button>
+                                    
+                                            <script type="text/javascript">
+                                                var state = "@instance.State.Name";
+
+                                                $("#@instance.InstanceId-start").click(function () {
+                                                    $.post("/ec2/instance?action=start&id=@instance.InstanceId", function (result) {
+                                                        if (result === "OK") {
+                                                            $('.modal-body').html('<p class="text-center"><span class="material-icons">done</span></p><p class="text-center">@instance.InstanceId has started successfully.</p>');
+                                                        }
+                                                        else {
+                                                            $('.modal-body').html('<p class="text-center"><span class="material-icons">error</span></p><p class="text-center">' + result + '</p>');
+                                                        }
+
+                                                        $('#myModal').modal('show');
+                                                    });
+                                                });
+
+                                                $("#@instance.InstanceId-stop").click(function () {
+                                                    $.post("/ec2/instance?action=stop&id=@instance.InstanceId", function (result) {
+                                                        if (result === "OK") {
+                                                            $('.modal-body').html('<p class="text-center"><span class="material-icons">done</span></p><p class="text-center">@instance.InstanceId has stopped successfully.</p>');
+                                                        }
+                                                        else {
+                                                            $('.modal-body').html('<p class="text-center"><span class="material-icons">error</span></p><p class="text-center">' + result + '</p>');
+                                                        }
+
+                                                        $('#myModal').modal('show');
+                                                    });
+                                                });
+
+                                                $("#@instance.InstanceId-restart").click(function () {
+                                                    $.post("/ec2/instance?action=restart&id=@instance.InstanceId", function (result) {
+                                                        if (result === "OK") {
+                                                            $('.modal-body').html('<p class="text-center"><span class="material-icons">done</span></p><p class="text-center">@instance.InstanceId has restarted successfully.</p>');
+                                                        }
+                                                        else {
+                                                            $('.modal-body').html('<p class="text-center"><span class="material-icons">error</span></p><p class="text-center">' + result + '</p>');
+                                                        }
+
+                                                        $('#myModal').modal('show');
+                                                    });
+                                                });
+
+                                                $("#@instance.InstanceId-terminate").click(function () {
+                                                    $.post("/ec2/instance?action=terminate&id=@instance.InstanceId", function (result) {
+                                                        if (result === "OK") {
+                                                            $('.modal-body').html('<p class="text-center"><span class="material-icons">done</span></p><p class="text-center">@instance.InstanceId has terminated successfully.</p>');
+                                                        }
+                                                        else {
+                                                            $('.modal-body').html('<p class="text-center"><span class="material-icons">error</span></p><p class="text-center">' + result + '</p>');
+                                                        }
+
+                                                        $('#myModal').modal('show');
+                                                    });
+                                                });
+
+                                                $("#@instance.InstanceId-screenshot").click(function () {
+                                                    $.post("/ec2/instance?action=screenshot&id=@instance.InstanceId", function (result) {
+                                                        if (state === "running") {
+                                                            $('.modal-body').html('<div class="text-center"><img class="img-fluid" src="' + result + '" alt="@instance.InstanceId" /></div>');
+                                                        }
+                                                        else {
+                                                            $('.modal-body').html('<p class="text-center"><span class="material-icons">error</span></p><p class="text-center"> An instance must be in the running state in order to obtain a screenshot.</p>');
+                                                        }
+
+                                                        $('#myModal').modal('show');
+                                                    });
+                                                });
+
+                                                $("#@instance.InstanceId-logs").click(function () {
+                                                    $.post("/ec2/instance?action=logs&id=@instance.InstanceId", function (result) {
+                                                        $('.modal-body').html('<pre><code>' + result + '</code></pre>');
+
+                                                        $('#myModal').modal('show');
+                                                    });
+                                                });
+                                            </script>
+                                        </div>
+                                    </td>
+                                }
+                                <td class="col-sm-2">@instance.InstanceId</td>
+                                <td class="col-sm-2">@instance.Tags.Where(t => t.Key.Equals("Name", StringComparison.CurrentCultureIgnoreCase)).Select(t => t.Value).FirstOrDefault()</td>
+                                <td class="col-sm-1">@instance.InstanceType</td>
+                                <td class="col-sm-1">@if (@instance.Platform == null) { instance.Platform = "Linux"; } @instance.Platform</td>
+                                <td class="@(User.Identity.IsAuthenticated == true ? "col-sm-1" : "col-sm-2")">@instance.Placement.AvailabilityZone</td>
+                                <td class="col-sm-1">@instance.PrivateIpAddress</td>
+                                <td class="col-sm-1">@instance.State.Name</td>
+                                <td class="col-sm-2">@instance.LaunchTime</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        }
+    </div>
+</div>
+
+<div id="myModal" class="modal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
