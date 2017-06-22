@@ -7,6 +7,7 @@ Instancely is an alternative AWS EC2 and RDS dashboard that sorts instances by t
 2. OpenID access keys and the authority URL
 3. Slack incoming webhook URL
 2. EC2 and RDS instances with the following key-value pairs:
+
    Team = team_name
    Environment = environment_name
    Application = application_name
@@ -16,13 +17,15 @@ Instancely is an alternative AWS EC2 and RDS dashboard that sorts instances by t
 1. Run `git clone git@github.com:cvandal/instancely.git` or `git clone https://github.com/cvandal/instancely.git`
 2. Run `dotnet restore`, followed by `dotnet build`, followed by `dotnet publish`
 3. Run the following commands to add the required environment variables:
-   `$env:ASPNETCORE_URLS = "http://*:5000"`
-   `$env:AWS_ACCESS_KEY = "AKIxxx"`
-   `$env:AWS_SECRET_KEY = "abc123"`
-   `$env:OPENID_CLIENTID = "instancely"`
-   `$env:OPENID_CLIENTSECRET = "abc123"`
-   `$env:OPENID_AUTHORITY = "https://auth.yourdomain.com/"`
-   `$env:SLACK_WEBHOOK = "https://hooks.slack.com/services/xxx/yyy/zzz"`
+```
+$env:ASPNETCORE_URLS = "http://*:5000"
+$env:AWS_ACCESS_KEY = "AKIxxx"
+$env:AWS_SECRET_KEY = "abc123"
+$env:OPENID_CLIENTID = "instancely"
+$env:OPENID_CLIENTSECRET = "abc123"
+$env:OPENID_AUTHORITY = "https://auth.yourdomain.com/"
+$env:SLACK_WEBHOOK = "https://hooks.slack.com/services/xxx/yyy/zzz"
+```
 4. Run `dotnet run`
 
 ### Usage (Docker)
