@@ -1,6 +1,6 @@
 # Instancely
 
-Instancely is an alternative AWS EC2 and RDS dashboard that sorts instances by their respective `Team`, `Environment`, and `Application`. The original concept for Instancely was developed by Michael Lorant (https://github.com/mikelorant).
+Instancely is an alternative dashboard for viewing your AWS EC2 and RDS instances sorted by their respective `Team`, `Environment`, and `Application`. The original concept for Instancely was developed by Michael Lorant (https://github.com/mikelorant).
 
 ### Requirements
 1. AWS access keys with full access to EC2 and RDS
